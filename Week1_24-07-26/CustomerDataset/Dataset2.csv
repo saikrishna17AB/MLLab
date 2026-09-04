@@ -1,0 +1,16 @@
+CustomerID,Age,MonthlyCharges,TotalCharges,ContractType,Churn
+1001,34,65.5,2227.0,One Year,No
+1002,22,20.0,40.0,Month-to-month,Yes
+1003,50,95.4,,Two Year,No
+1004,63,110.2,6942.5,Two Year,No
+1005,28,45.0,1350.0,Month-to-month,No
+1006,41,,2010.3,One Year,No
+1007,55,85.1,4255.0,Month-to-month,Yes
+1008,19,25.0,75.0,Month-to-month,No
+1009,38,70.8,,One Year,Noa
+1010,47,100.5,5025.0,Two Year,Yes
+1011,32,55.0,1100.0,Month-to-month,No
+1012,25,20.1,60.3,Month-to-month,Yes
+1013,58,105.3,6318.0,Two Year,No
+1014,40,75.0,3000.0,One Year,No
+1015,61,115.0,7015.0,Two Year,No
