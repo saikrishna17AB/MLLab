@@ -1,0 +1,44 @@
+PS C:\Users\SANTOSH KUMAR GOJE\OneDrive\Desktop\SM\MLLab\Week9-10-18-26> python task.py
+Device: cpu
+Total reviews: 10662
+Positive reviews: 5331
+Negative reviews: 5331
+Training: 8500
+Validation: 1100
+Testing: 1062
+Vocabulary size: 16706
+RNN Epoch 1/15 | Train Loss: 0.6943 | Val Loss: 0.6935 | Val Accuracy: 0.4991
+RNN Epoch 2/15 | Train Loss: 0.6911 | Val Loss: 0.6933 | Val Accuracy: 0.5009
+RNN Epoch 3/15 | Train Loss: 0.6885 | Val Loss: 0.6928 | Val Accuracy: 0.5018
+RNN Epoch 4/15 | Train Loss: 0.6859 | Val Loss: 0.6925 | Val Accuracy: 0.4909
+RNN Epoch 5/15 | Train Loss: 0.6859 | Val Loss: 0.6935 | Val Accuracy: 0.5055
+RNN Epoch 6/15 | Train Loss: 0.6851 | Val Loss: 0.6932 | Val Accuracy: 0.5027
+RNN Epoch 7/15 | Train Loss: 0.6801 | Val Loss: 0.7064 | Val Accuracy: 0.5073
+RNN early stopping
+LSTM Epoch 1/15 | Train Loss: 0.6938 | Val Loss: 0.6928 | Val Accuracy: 0.5009
+LSTM Epoch 2/15 | Train Loss: 0.6920 | Val Loss: 0.6917 | Val Accuracy: 0.5000
+LSTM Epoch 3/15 | Train Loss: 0.6893 | Val Loss: 0.6931 | Val Accuracy: 0.5018
+LSTM Epoch 4/15 | Train Loss: 0.6863 | Val Loss: 0.6935 | Val Accuracy: 0.5155
+LSTM Epoch 5/15 | Train Loss: 0.6780 | Val Loss: 0.6865 | Val Accuracy: 0.5309
+LSTM Epoch 6/15 | Train Loss: 0.6723 | Val Loss: 0.6975 | Val Accuracy: 0.5064
+LSTM Epoch 7/15 | Train Loss: 0.6574 | Val Loss: 0.7035 | Val Accuracy: 0.5045
+LSTM Epoch 8/15 | Train Loss: 0.6350 | Val Loss: 0.7240 | Val Accuracy: 0.5045
+LSTM early stopping
+
+ Simple RNN Test Results
+Accuracy : 0.5151
+Precision: 0.5265
+Recall   : 0.2994
+F1-score : 0.3818
+
+ LSTM Test Results
+Accuracy : 0.516
+Precision: 0.5095
+Recall   : 0.8625
+F1-score : 0.6406
+
+Final Model Comparison:
+     Model  Accuracy  Precision  Recall  F1-score
+Simple RNN    0.5151     0.5265  0.2994    0.3818
+      LSTM    0.5160     0.5095  0.8625    0.6406
+PS C:\Users\SANTOSH KUMAR GOJE\OneDrive\Desktop\SM\MLLab\Week9-10-18-26> \
