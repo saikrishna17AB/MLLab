@@ -84,7 +84,7 @@ def findbestsplit(X,y):
             
             for i in range(len(values)-1):
                 
-                threshold = (    values[i] + values[i + 1]) / 2
+                threshold = (values[i] + values[i + 1]) / 2
 
 
                 # Left:
@@ -168,7 +168,7 @@ def build_tree(
 
         # Predict the majority class.
         return {
-            "leaf": True,
+            "leaf": True,   
             "prediction": majorityclass(y)
         }
 
