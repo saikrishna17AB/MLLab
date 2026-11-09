@@ -1,107 +1,119 @@
-import pandas as pd
-import numpy as np
 import math
-from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.metrics import accuracy_score,precision_score,recall_score,f1_score,confusion_matrix
 
-traindata=pd.read_csv("SalaryData_Train.csv")
-testdata=pd.read_csv("SalaryData_Test.csv")
-X=traindata.iloc[:,:-1]
-y=traindata.iloc[:,-1]
+import pandas as pd
+from sklearn.metrics import (
+    accuracy_score,
+    confusion_matrix,
+    precision_score,
+    recall_score,
+)
 
-numericalfeatures=["age","educationno","capitalgain","capitalloss","hoursperweek"]
-categoricalfeatures=["workclass","education","maritalstatus","occupation","relationship","race","sex","native"]
+traindata = pd.read_csv("SalaryData_Train.csv")
+testdata = pd.read_csv("SalaryData_Test.csv")
+X = traindata.iloc[:, :-1]
+y = traindata.iloc[:, -1]
+
+numericalfeatures = ["age", "educationno", "capitalgain", "capitalloss", "hoursperweek"]
+categoricalfeatures = [
+    "workclass",
+    "education",
+    "maritalstatus",
+    "occupation",
+    "relationship",
+    "race",
+    "sex",
+    "native",
+]
 
 for feature in categoricalfeatures:
-    print(feature,":",traindata[feature].nunique())
+    print(feature, ":", traindata[feature].nunique())
 
-#Missing values in each column
+# Missing values in each column
 
 # print(traindata.isnull().sum())
 
-#total number of missing values
+# total number of missing values
 
-totalmissing=traindata.isnull().sum().sum()
+totalmissing = traindata.isnull().sum().sum()
 print(totalmissing)
 
 print(traindata["Salary"].unique())
 
 
-#calculating prior probability
-less=0
-more=0
+# calculating prior probability
+less = 0
+more = 0
 for salary in traindata["Salary"]:
-    if salary==' <=50K':
-        less=less+1
-    elif salary==' >50K':
-        more=more+1
+    if salary == " <=50K":
+        less = less + 1
+    elif salary == " >50K":
+        more = more + 1
 
-total=len(traindata)
+total = len(traindata)
 
-lessprobability=less/total
-print("Less than 50K:",lessprobability)
-moreprobability=more/total
-print("More than 50K:",moreprobability)
+lessprobability = less / total
+print("Less than 50K:", lessprobability)
+moreprobability = more / total
+print("More than 50K:", moreprobability)
 
 
-#Preprocessing data
+# Preprocessing data
 
-Xtrain=traindata.drop("Salary",axis=1)
-ytrain=traindata["Salary"]
+Xtrain = traindata.drop("Salary", axis=1)
+ytrain = traindata["Salary"]
 
-Xtest=testdata.drop("Salary",axis=1)
-ytest=testdata["Salary"]
+Xtest = testdata.drop("Salary", axis=1)
+ytest = testdata["Salary"]
 
-print("Missing values in training data:",Xtrain.isnull().sum())
-print("Missing values in test data:",Xtest.isnull().sum())
+print("Missing values in training data:", Xtrain.isnull().sum())
+print("Missing values in test data:", Xtest.isnull().sum())
 
-#Encoding it
+# Encoding it
 
-mappings={}
+mappings = {}
 for column in categoricalfeatures:
-    categories=Xtrain[column].unique()
+    categories = Xtrain[column].unique()
 
-    mapping={}
+    mapping = {}
     for i in range(len(categories)):
-        mapping[categories[i]]=i
+        mapping[categories[i]] = i
 
-    mappings[column]=mapping
+    mappings[column] = mapping
 
-#Apply the mapping to both datasets
+# Apply the mapping to both datasets
 for column in categoricalfeatures:
-    Xtrain[column]=Xtrain[column].map(mappings[column])
-    Xtest[column]=Xtest[column].map(mappings[column])
+    Xtrain[column] = Xtrain[column].map(mappings[column])
+    Xtest[column] = Xtest[column].map(mappings[column])
 
 
-Xless=Xtrain[ytrain==' <=50K']
-Xmore=Xtrain[ytrain==' >50K']
+Xless = Xtrain[ytrain == " <=50K"]
+Xmore = Xtrain[ytrain == " >50K"]
 
 print(Xless)
 print(Xmore)
 
-#Calculate mean for both
+# Calculate mean for both
 
-means={}
-means[' <=50K']={}
-means[' >50K']={}
+means = {}
+means[" <=50K"] = {}
+means[" >50K"] = {}
 
 for feature in Xtrain.columns:
-    total=0
+    total = 0
     for value in Xless[feature]:
-        total+=value
+        total += value
 
-    meanless=total/len(Xless)
-    means[' <=50K'][feature]=meanless
+    meanless = total / len(Xless)
+    means[" <=50K"][feature] = meanless
 
     # Mean for >50K
 
-    total=0
+    total = 0
     for value in Xmore[feature]:
-        total+=value
-    meanmore=total/len(Xmore)
+        total += value
+    meanmore = total / len(Xmore)
 
-    means[' >50K'][feature]=meanmore
+    means[" >50K"][feature] = meanmore
 
 print("\nMeans for <=50K:")
 print(means[" <=50K"])
@@ -109,7 +121,7 @@ print(means[" <=50K"])
 print("\nMeans for >50K:")
 print(means[" >50K"])
 
-#Varience
+# Varience
 
 variances = {}
 
@@ -118,14 +130,12 @@ variances[" >50K"] = {}
 
 
 for feature in Xtrain.columns:
-
     mean = means[" <=50K"][feature]
 
     total = 0
 
     for value in Xless[feature]:
-
-        total+=(value - mean) ** 2
+        total += (value - mean) ** 2
 
     variance_less = total / len(Xless)
 
@@ -136,7 +146,6 @@ for feature in Xtrain.columns:
     total = 0
 
     for value in Xmore[feature]:
-
         total += (value - mean) ** 2
 
     variance_more = total / len(Xmore)
@@ -152,14 +161,12 @@ print(variances[" >50K"])
 
 def gaussian_probability(x, mean, variance):
 
-    numerator = math.exp(-((x - mean) ** 2) / (2 * variance)
-    )
+    numerator = math.exp(-((x - mean) ** 2) / (2 * variance))
 
-    denominator = math.sqrt(
-        2 * math.pi * variance
-    )
+    denominator = math.sqrt(2 * math.pi * variance)
 
     return numerator / denominator
+
 
 def calculate_likelihood(row, class_value):
 
@@ -167,7 +174,6 @@ def calculate_likelihood(row, class_value):
     likelihood = 1
     # Go through every feature
     for feature in Xtrain.columns:
-
         # Value of this feature for the test employee
         x = row[feature]
 
@@ -177,48 +183,51 @@ def calculate_likelihood(row, class_value):
         # Variance of this feature for the particular class
         variance = variances[class_value][feature]
 
-        probability = gaussian_probability(x,mean,variance)
+        probability = gaussian_probability(x, mean, variance)
 
         likelihood *= probability
 
     return likelihood
 
-priors={" <=50K":lessprobability," >50K":moreprobability}
 
-def calculatescore(row,classvalue):
-    likelihood=calculate_likelihood(row,classvalue)
+priors = {" <=50K": lessprobability, " >50K": moreprobability}
 
-    prior=priors[classvalue]
-    score=prior*likelihood
+
+def calculatescore(row, classvalue):
+    likelihood = calculate_likelihood(row, classvalue)
+
+    prior = priors[classvalue]
+    score = prior * likelihood
     return score
 
-#Make predicitons
 
-predictions=[]
+# Make predicitons
+
+predictions = []
 
 for i in range(len(Xtest)):
-    row=Xtest.iloc[i]
+    row = Xtest.iloc[i]
 
-    scoreless=calculatescore(row,' <=50K')
-    scoremore=calculatescore(row,' >50K')
+    scoreless = calculatescore(row, " <=50K")
+    scoremore = calculatescore(row, " >50K")
 
-    #choose the class with higher score
-    if scoreless>scoremore:
-        prediciton=' <=50K'
+    # choose the class with higher score
+    if scoreless > scoremore:
+        prediciton = " <=50K"
         predictions.append(prediciton)
     else:
-        prediciton=' >50K'
+        prediciton = " >50K"
         predictions.append(prediciton)
 
 # for i in range(len(Xtest)):
 #     print("Test sample: ",i+1,"Actual value: ",ytest.iloc[i],"Predicted: ",predictions[i])
 
-accuracy=accuracy_score(ytest,predictions)
-precision=precision_score(ytest,predictions,pos_label=" >50K")
-recall=recall_score(ytest,predictions,pos_label=" >50K")
-f1score=recall_score(ytest,predictions,pos_label=" >50K")
+accuracy = accuracy_score(ytest, predictions)
+precision = precision_score(ytest, predictions, pos_label=" >50K")
+recall = recall_score(ytest, predictions, pos_label=" >50K")
+f1score = recall_score(ytest, predictions, pos_label=" >50K")
 
-confusion=confusion_matrix(ytest,predictions,labels=[" <=50K"," >50K"])
+confusion = confusion_matrix(ytest, predictions, labels=[" <=50K", " >50K"])
 
 print("Accuracy :", accuracy)
 print("Precision:", precision)

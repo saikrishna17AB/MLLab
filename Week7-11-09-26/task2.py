@@ -7,7 +7,7 @@ from sklearn.preprocessing import StandardScaler
 
 import matplotlib.pyplot as plt
 
-
+    
 # Read dataset
 df = pd.read_csv("heart-disease.csv")
 
@@ -115,7 +115,7 @@ def gradient_descent(X, y, l, iterations):
         # Calculate predicted probabilities
         predictions = sigmoid(z)
 
-        # Calculate gradient
+        # Calculate gradient   
         gradient = (1 / len(y)) * np.dot( X.T,predictions - y)
 
         # Update weights
@@ -234,7 +234,7 @@ def newtons_method(X, y, iterations):
             np.dot(R, X)
         )
 
-        # Find inverse of Hessian
+        # Find inverse of Hessian   
         hessian_inverse = np.linalg.inv(hessian)
 
         # Calculate H^(-1) * gradient
