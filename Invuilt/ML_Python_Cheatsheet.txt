@@ -1,0 +1,471 @@
+PYTHON MACHINE LEARNING CHEAT SHEET
+
+NumPy | Pandas | Matplotlib | scikit-learn | TensorFlow / Keras
+
+Use this as a quick syntax reference for data loading, preprocessing,
+visualization, model training, prediction and evaluation.
+
+============================================================ 1. IMPORTS
+============================================================
+
+import numpy as np import pandas as pd import matplotlib.pyplot as plt
+
+from sklearn.model_selection import train_test_split from
+sklearn.preprocessing import StandardScaler, MinMaxScaler, LabelEncoder
+from sklearn.metrics import accuracy_score, confusion_matrix,
+classification_report from sklearn.metrics import mean_squared_error,
+mean_absolute_error, r2_score
+
+import tensorflow as tf from tensorflow import keras from
+tensorflow.keras import layers
+
+============================================================ 2. NUMPY
+============================================================
+
+CREATE ARRAYS
+
+a = np.array([1, 2, 3, 4]) A = np.array([[1, 2], [3, 4]])
+
+np.zeros((3, 4)) # Matrix of zeros np.ones((2, 3)) # Matrix of ones
+np.full((2, 2), 7) # Fill matrix with 7 np.eye(3) # Identity matrix
+np.arange(0, 10, 2) # [0, 2, 4, 6, 8] np.linspace(0, 1, 5) # 5 evenly
+spaced values np.random.rand(3, 2) # Uniform random values in [0, 1)
+np.random.randn(3, 2) # Standard normal random values
+np.random.randint(0, 10, 5) # Random integers np.random.seed(42) #
+Reproducible random numbers
+
+ARRAY INFORMATION
+
+a.shape # Shape a.ndim # Number of dimensions a.size # Number of
+elements a.dtype # Data type a.astype(float) # Convert type
+
+INDEXING AND SLICING
+
+a[0] # First element a[-1] # Last element A[0, 1] # Row 0, column 1 A[:,
+0] # All rows, first column A[0, :] # First row A[0:2, 1:3] # Slice
+a[a > 2] # Boolean filtering np.where(a > 2, 1, 0) # Conditional values
+
+RESHAPE AND JOIN
+
+a.reshape(2, 2) # Reshape; total element count must match a.flatten() #
+Flatten into 1-D copy a.ravel() # Flatten, often a view A.T # Transpose
+np.concatenate((a, a)) # Concatenate np.vstack((A, A)) # Stack rows
+np.hstack((A, A)) # Stack columns np.split(a, 2) # Split into 2 equal
+parts if possible
+
+MATHEMATICS AND STATISTICS
+
+np.sum(a) np.mean(a) np.median(a) np.var(a) np.std(a) np.min(a)
+np.max(a) np.argmax(a) # Index of maximum np.argmin(a) # Index of
+minimum np.sort(a) np.unique(a) np.sqrt(a) np.exp(a) np.log(a) # Natural
+logarithm np.log2(a) np.abs(a) np.dot(A, B) # Dot product A @ B # Matrix
+multiplication np.linalg.inv(A) # Matrix inverse np.linalg.det(A) #
+Determinant np.linalg.eig(A) # Eigenvalues/eigenvectors
+np.linalg.eigh(A) # Symmetric matrix eigenproblem
+
+AXIS
+
+A = np.array([[1, 2], [3, 4], [5, 6]]) np.sum(A, axis=0) # Column sums:
+[9, 12] np.sum(A, axis=1) # Row sums: [3, 7, 11] np.mean(A, axis=0) #
+Mean of each column np.mean(A, axis=1) # Mean of each row
+
+Rule: axis=0: operation down rows, one result per column. axis=1:
+operation across columns, one result per row.
+
+MISSING VALUES
+
+np.isnan(A) # True where NaN occurs np.isnan(A).sum() # Number of NaN
+values np.nanmean(A, axis=0) # Mean ignoring NaN np.nanmedian(A, axis=0)
+# Median ignoring NaN np.nan_to_num(A, nan=0) # Replace NaN with zero
+
+ONE-HOT ENCODING AND SHUFFLING
+
+y = np.array([0, 2, 1, 0]) Y = np.eye(3)[y] # One-hot encode 3 classes
+
+indices = np.random.permutation(len(X)) X = X[indices] y = y[indices] #
+Apply the SAME permutation to X and y.
+
+============================================================ 3. PANDAS
+============================================================
+
+READ AND WRITE
+
+df = pd.read_csv(“data.csv”) df = pd.read_csv(“data.txt”, sep=r”+“,
+header=None) df = pd.read_excel(”data.xlsx”)
+
+df.to_csv(“output.csv”, index=False) df.to_excel(“output.xlsx”,
+index=False)
+
+INSPECT DATA
+
+df.head() df.head(10) df.tail() df.shape df.columns df.dtypes df.info()
+df.describe() df.describe(include=“all”) df.isnull().sum()
+df.duplicated().sum()
+
+SELECT ROWS AND COLUMNS
+
+df[“age”] # One column (Series) df[[“age”, “salary”]] # Multiple columns
+(DataFrame) df.iloc[0] # First row by position df.iloc[0:5, 0:3] # First
+5 rows, first 3 columns df.loc[0, “age”] # Row label 0, column age
+df.loc[:, [“age”, “salary”]] df.iloc[:, :-1] # All columns except last
+df.iloc[:, -1] # Last column
+
+FILTER ROWS
+
+df[df[“age”] > 25] df[(df[“age”] > 25) & (df[“salary”] > 30000)]
+df[(df[“city”] == “Delhi”) | (df[“city”] == “Mumbai”)]
+df[df[“city”].isin([“Delhi”, “Mumbai”])] df[df[“age”].between(20, 40)]
+
+Use & for AND, | for OR, ~ for NOT. Put each condition inside
+parentheses.
+
+MISSING VALUES AND DUPLICATES
+
+df.isnull().sum() df.dropna() # Drop rows with missing values
+df.dropna(axis=1) # Drop columns with missing values df[“age”] =
+df[“age”].fillna(df[“age”].mean()) df[“city”] =
+df[“city”].fillna(df[“city”].mode()[0]) df.drop_duplicates()
+
+DATA TYPES AND ENCODING
+
+df[“age”] = pd.to_numeric(df[“age”], errors=“coerce”) df[“date”] =
+pd.to_datetime(df[“date”], errors=“coerce”) pd.get_dummies(df,
+columns=[“city”], dtype=int)
+
+from sklearn.preprocessing import LabelEncoder le = LabelEncoder()
+df[“class_encoded”] = le.fit_transform(df[“class”])
+le.inverse_transform(df[“class_encoded”])
+
+GROUP, SORT AND MODIFY
+
+df.groupby(“department”)[“salary”].mean()
+df.groupby(“department”).size()
+df.groupby(“department”)[“salary”].agg([“mean”, “min”, “max”])
+df.sort_values(“salary”) df.sort_values(“salary”, ascending=False)
+
+df[“new_column”] = df[“age”] * 2 df.drop(columns=[“unwanted_column”],
+inplace=True) df.rename(columns={“old”: “new”}, inplace=True)
+df.reset_index(drop=True, inplace=True) df.to_numpy() # Convert
+DataFrame to NumPy array
+
+FEATURES AND TARGET
+
+X = df.drop(columns=[“target”]) y = df[“target”]
+
+Or, when target is the last column:
+
+X = df.iloc[:, :-1] y = df.iloc[:, -1]
+
+============================================================ 4. DATA
+PREPROCESSING WITH SCIKIT-LEARN
+============================================================
+
+TRAIN-TEST SPLIT
+
+X_train, X_test, y_train, y_test = train_test_split( X, y,
+test_size=0.2, random_state=42, stratify=y )
+
+test_size=0.2 means 80% train and 20% test. random_state makes the split
+reproducible. stratify=y preserves class proportions in classification.
+Do not use stratify for a continuous regression target.
+
+STANDARDIZATION
+
+scaler = StandardScaler() X_train = scaler.fit_transform(X_train) X_test
+= scaler.transform(X_test)
+
+Formula: z = (x - training_mean) / training_standard_deviation.
+
+MIN-MAX SCALING
+
+scaler = MinMaxScaler() X_train = scaler.fit_transform(X_train) X_test =
+scaler.transform(X_test)
+
+Usually scales each feature to [0, 1].
+
+IMPORTANT: Fit the scaler ONLY on training data. Use the fitted scaler
+to transform test data and new samples.
+
+EVALUATION
+
+accuracy_score(y_test, y_pred) confusion_matrix(y_test, y_pred)
+classification_report(y_test, y_pred)
+
+For regression: mean_squared_error(y_test, y_pred)
+mean_absolute_error(y_test, y_pred) r2_score(y_test, y_pred)
+
+COMMON MODEL API
+
+model = SomeEstimator(parameters) model.fit(X_train, y_train) # Train
+y_pred = model.predict(X_test) # Predict labels/values y_prob =
+model.predict_proba(X_test) # Probabilities, if supported
+model.score(X_test, y_test) # Default estimator score
+
+============================================================ 5.
+MATPLOTLIB ============================================================
+
+BASIC PLOT
+
+plt.figure(figsize=(8, 5)) plt.title(“Plot title”) plt.xlabel(“X axis”)
+plt.ylabel(“Y axis”) plt.grid(True) plt.show()
+
+LINE PLOT
+
+plt.plot(x, y, marker=“o”, label=“Line”) plt.legend() plt.show()
+
+SCATTER PLOT
+
+plt.scatter(x, y) plt.xlabel(“Feature 1”) plt.ylabel(“Feature 2”)
+plt.show()
+
+BAR CHART
+
+plt.bar(categories, values) plt.show()
+
+HISTOGRAM
+
+plt.hist(data, bins=10, edgecolor=“black”) plt.xlabel(“Value”)
+plt.ylabel(“Frequency”) plt.show()
+
+BOX PLOT
+
+plt.boxplot(data) plt.show()
+
+MULTIPLE LINES
+
+plt.plot(x, y1, label=“Class 1”) plt.plot(x, y2, label=“Class 2”)
+plt.legend() plt.show()
+
+HEATMAP USING MATPLOTLIB
+
+plt.imshow(matrix, cmap=“viridis”, aspect=“auto”) plt.colorbar()
+plt.xticks(range(len(labels)), labels, rotation=45)
+plt.yticks(range(len(labels)), labels) plt.title(“Heatmap”)
+plt.tight_layout() plt.show()
+
+SUBPLOTS
+
+fig, axes = plt.subplots(1, 2, figsize=(10, 4)) axes[0].plot(x, y)
+axes[0].set_title(“Line plot”) axes[1].hist(data)
+axes[1].set_title(“Histogram”) plt.tight_layout() plt.show()
+
+SAVE FIGURE
+
+plt.savefig(“plot.png”, dpi=300, bbox_inches=“tight”) plt.show()
+
+============================================================ 6.
+TENSORFLOW / KERAS
+============================================================
+
+IMPORTS
+
+import tensorflow as tf from tensorflow import keras from
+tensorflow.keras import layers
+
+MULTICLASS CLASSIFICATION MODEL
+
+model = keras.Sequential([ keras.Input(shape=(4,)), # 4 input features
+layers.Dense(16, activation=“relu”), # Hidden layer 1 layers.Dense(8,
+activation=“relu”), # Hidden layer 2 layers.Dense(3,
+activation=“softmax”) # 3 output classes])
+
+COMPILE
+
+model.compile( optimizer=“adam”, loss=“sparse_categorical_crossentropy”,
+metrics=[“accuracy”] )
+
+Common optimizers: “adam”, “sgd”,
+keras.optimizers.Adam(learning_rate=0.001)
+
+Common losses: “sparse_categorical_crossentropy”: multiclass integer
+labels (0, 1, 2). “categorical_crossentropy”: multiclass one-hot labels.
+“binary_crossentropy”: binary classification. “mse”: regression.
+
+TRAIN
+
+history = model.fit( X_train, y_train, epochs=100, batch_size=16,
+validation_split=0.2, verbose=1 )
+
+epochs: number of complete passes through training data. batch_size:
+samples processed before a weight update. validation_split: fraction of
+training data used for validation. verbose=1: show training progress.
+
+EVALUATE AND PREDICT
+
+test_loss, test_accuracy = model.evaluate(X_test, y_test)
+
+probabilities = model.predict(X_test) predicted_classes =
+np.argmax(probabilities, axis=1)
+
+Predict one sample:
+
+sample_probabilities = model.predict(sample) sample_class =
+np.argmax(sample_probabilities, axis=1)
+
+ONE-HOT LABELS
+
+y_onehot = keras.utils.to_categorical(y, num_classes=3)
+
+If y contains integer labels 0, 1, 2: Use
+loss=“sparse_categorical_crossentropy”.
+
+If y is one-hot encoded: Use loss=“categorical_crossentropy”.
+
+BINARY CLASSIFICATION
+
+binary_model = keras.Sequential([
+keras.Input(shape=(number_of_features,)), layers.Dense(16,
+activation=“relu”), layers.Dense(1, activation=“sigmoid”)])
+
+binary_model.compile( optimizer=“adam”, loss=“binary_crossentropy”,
+metrics=[“accuracy”] )
+
+REGRESSION MODEL
+
+regression_model = keras.Sequential([
+keras.Input(shape=(number_of_features,)), layers.Dense(32,
+activation=“relu”), layers.Dense(16, activation=“relu”), layers.Dense(1)
+# Linear output])
+
+regression_model.compile( optimizer=“adam”, loss=“mse”, metrics=[“mae”]
+)
+
+DROPOUT
+
+layers.Dropout(0.2) # Drop 20% of units during training.
+
+EARLY STOPPING
+
+early_stop = keras.callbacks.EarlyStopping( monitor=“val_loss”,
+patience=10, restore_best_weights=True )
+
+history = model.fit( X_train, y_train, epochs=200, validation_split=0.2,
+callbacks=[early_stop] )
+
+MODEL INFORMATION, SAVE AND LOAD
+
+model.summary() model.get_weights() model.count_params()
+
+model.save(“my_model.keras”) loaded_model =
+keras.models.load_model(“my_model.keras”)
+
+TRAINING HISTORY
+
+history.history[“loss”] history.history[“accuracy”]
+history.history[“val_loss”] history.history[“val_accuracy”]
+
+============================================================ 7. COMMON
+SCIKIT-LEARN MODEL SYNTAX
+============================================================
+
+GAUSSIAN NAIVE BAYES
+
+from sklearn.naive_bayes import GaussianNB model = GaussianNB()
+model.fit(X_train, y_train) y_pred = model.predict(X_test) y_prob =
+model.predict_proba(X_test)
+
+LOGISTIC REGRESSION
+
+from sklearn.linear_model import LogisticRegression model =
+LogisticRegression(max_iter=1000) model.fit(X_train, y_train) y_pred =
+model.predict(X_test) y_prob = model.predict_proba(X_test)
+
+LINEAR REGRESSION
+
+from sklearn.linear_model import LinearRegression model =
+LinearRegression() model.fit(X_train, Y_train) scores =
+model.predict(X_test) # For one-hot multiclass target: y_pred =
+np.argmax(scores, axis=1)
+
+K-NEAREST NEIGHBORS
+
+from sklearn.neighbors import KNeighborsClassifier model =
+KNeighborsClassifier(n_neighbors=5) model.fit(X_train, y_train) y_pred =
+model.predict(X_test) y_prob = model.predict_proba(X_test)
+
+LDA AND QDA
+
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+
+lda = LinearDiscriminantAnalysis() lda.fit(X_train, y_train) lda_pred =
+lda.predict(X_test) lda_prob = lda.predict_proba(X_test)
+
+qda = QuadraticDiscriminantAnalysis() qda.fit(X_train, y_train) qda_pred
+= qda.predict(X_test) qda_prob = qda.predict_proba(X_test)
+
+DECISION TREE
+
+from sklearn.tree import DecisionTreeClassifier model =
+DecisionTreeClassifier(criterion=“entropy”, random_state=42)
+model.fit(X_train, y_train) y_pred = model.predict(X_test)
+
+SUPPORT VECTOR MACHINE
+
+from sklearn.svm import SVC model = SVC(kernel=“rbf”, probability=True)
+model.fit(X_train, y_train) y_pred = model.predict(X_test) y_prob =
+model.predict_proba(X_test)
+
+SCIKIT-LEARN NEURAL NETWORK
+
+from sklearn.neural_network import MLPClassifier model = MLPClassifier(
+hidden_layer_sizes=(16, 8), activation=“relu”, max_iter=1000,
+random_state=42 ) model.fit(X_train, y_train) y_pred =
+model.predict(X_test) y_prob = model.predict_proba(X_test)
+
+============================================================ 8.
+SCIPY.STATS PROBABILITY DISTRIBUTIONS
+============================================================
+
+from scipy.stats import norm, binom, poisson
+
+Continuous normal distribution
+
+dist = norm(loc=50, scale=10) # loc=mean, scale=standard deviation
+dist.pdf(60) # Density at 60 dist.cdf(60) # P(X <= 60) dist.ppf(0.95) #
+95th percentile dist.rvs(size=10) # Random samples dist.mean()
+dist.var() dist.std()
+
+P(40 <= X <= 60)
+
+dist.cdf(60) - dist.cdf(40)
+
+Discrete binomial distribution
+
+b = binom(n=10, p=0.5) b.pmf(5) # P(X = 5) b.cdf(5) # P(X <= 5) b.sf(5)
+# P(X > 5) b.ppf(0.95) b.rvs(size=10)
+
+Common scipy.stats distributions: bernoulli, binom, poisson, geom,
+nbinom, hypergeom, multinomial, uniform, norm, expon, gamma, beta, chi2,
+t, f.
+
+Discrete: use pmf(). Continuous: use pdf(). Continuous interval
+probability: P(a <= X <= b) = cdf(b) - cdf(a).
+
+============================================================ 9. EXAM
+REMINDERS ============================================================
+
+1.  Split data before fitting a scaler.
+2.  Fit preprocessing only on training data.
+3.  Transform test data and new samples using the already fitted scaler.
+4.  X generally has shape (number_of_samples, number_of_features).
+5.  Keras multiclass integer labels: Dense(number_of_classes,
+    activation=“softmax”) loss=“sparse_categorical_crossentropy”
+6.  Keras multiclass one-hot labels: Dense(number_of_classes,
+    activation=“softmax”) loss=“categorical_crossentropy”
+7.  Binary classification: Dense(1, activation=“sigmoid”)
+    loss=“binary_crossentropy”
+8.  Regression: Dense(1) with linear output loss=“mse”
+9.  Convert probability rows to predicted class indices: y_pred =
+    np.argmax(y_prob, axis=1)
+10. StandardScaler is often useful for KNN, SVM, Logistic Regression,
+    LDA/QDA and neural networks. Scaling is not compulsory for every
+    model.
+11. Linear Regression is primarily a regression algorithm. One-hot
+    targets plus argmax adapt it for classification, but Logistic
+    Regression is the standard classification method.
+12. KL Divergence compares probability distributions; it is not a
+    classifier.
+13. For a continuous variable, PDF(x) is density, not P(X=x).
+14. predict_proba() exists only for estimators that support
+    probabilities.
